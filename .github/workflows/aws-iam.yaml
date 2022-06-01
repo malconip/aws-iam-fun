@@ -20,9 +20,10 @@ jobs:
         terraform_version: 1.0.9
 
     - name: Run terraform fmt check
-      run: terraform fmt -check -diff -recursive ./terraform
+      working-directory: ./terraform
+      run: terraform fmt -check -diff -recursive
 
-  tf_fmt:
+  tf_plan_apply:
     name: Deploy to AWS
     runs-on: ubuntu-20.04
     steps:
@@ -43,15 +44,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Initialize Terraform
-      run: |
-        cd terraform
-        terraform init -input=false          
+      working-directory: ./terraform
+      run: terraform init -input=false          
 
     - name: Plan Terraform
       id: plan
       continue-on-error: true
+      working-directory: ./terraform
       run: |
-        cd terraform
         terraform plan -input=false -no-color -out=tfplan \
         && terraform show -no-color tfplan          
 
@@ -76,8 +76,8 @@ jobs:
       if: steps.plan.outcome == 'success'
       id: apply
       continue-on-error: true
+      working-directory: ./terraform
       run: |
-        cd terraform
         terraform apply \
           -input=false \
           -no-color \
