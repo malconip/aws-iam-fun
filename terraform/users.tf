@@ -21,3 +21,9 @@ resource "aws_iam_user_policy_attachment" "read-only" {
   user       = element(aws_iam_user.readonlynewusers.*.name, count.index)
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
+
+# Importing user
+resource "aws_iam_user" "importeduser" {
+  path = "/"
+  name = "vader"
+}
